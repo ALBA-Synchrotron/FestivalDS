@@ -1,0 +1,8 @@
+#!/bin/sh
+
+FOLDER='/homelocal/sicilia/ds/python/FestivalDS'
+cd $FOLDER
+CMD="python FestivalDS.py $1 $2"
+screen -dm -S FestivalDS-$1 $CMD
+#$CMD &
+
