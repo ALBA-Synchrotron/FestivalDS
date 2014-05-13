@@ -56,9 +56,9 @@ def Sequence(i,path,text):
     trace( 'In Sequence Thread ...')
     ev = threading.Event()
     for i in xrange(i):
-        os_cmd("play %s" % path,term=False)
+        os_cmd("padsp play %s" % path,term=False)
         ev.wait(0.5)
-    out = 'echo "%s" | festival --tts' % text
+    out = 'echo "%s" | padsp festival --tts' % text
     os_cmd(out,term=False)
 
 class FestivalDS(PyTango.Device_4Impl):
@@ -110,14 +110,14 @@ class FestivalDS(PyTango.Device_4Impl):
     ### Commands ###
     def Play(self,text):
         trace( 'In %s.Play(%s)'%(self.get_name(),text))
-        out = 'echo "%s" | festival --tts &' % text
+        out = 'echo "%s" | padsp festival --tts &' % text
         os_cmd(out)
 
     def Beep(self):
         trace( 'In %s.Beep()'%self.get_name())
         if not self.Beep_Path:
             raise Exception('Wav file not set')
-        os_cmd("play %s &" % self.Beep_Path)
+        os_cmd("padsp play %s &" % self.Beep_Path)
         
      
     def Play_Sequence(self, cmd):
