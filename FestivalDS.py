@@ -119,6 +119,19 @@ class FestivalDS(PyTango.Device_4Impl):
             raise Exception('Wav file not set')
         os_cmd("padsp play %s &" % self.Beep_Path)
         
+    def PopUp(self,argin):
+        if fandango.isString(argin):
+            title,text,period = argin,'',0
+        else:
+            title = argin[0]
+            text = argin[1] if len(argin)>1 else ''
+            period = int(argin[2]) if len(argin)>2 else 0
+        command = 'DISPLAY=%s notify-send "%s" -u critical'%(self.Display,title)
+        command+=" -t %s"%(1000*(period or 60))
+        if self.Icon: command+=" -i %s"%self.Icon
+        if text: command+=' "%s"'%text.replace('<br/>','\n').replace('<p>','\n').replace('</p>','\n').replace('<br>','\n')
+        os_cmd(command)
+        return title #command
      
     def Play_Sequence(self, cmd):
         trace( 'In %s.Play_Sequence(%s)'%(self.get_name(),cmd))
@@ -155,6 +168,14 @@ class FestivalDSClass(PyTango.DeviceClass):
             [PyTango.DevShort,
             "",
             None ],
+        'Display':
+            [PyTango.DevString,
+            "Display to show popup mesages",
+            [':0'] ],
+        'Icon':
+            [PyTango.DevString,
+            "Icon for notifications",
+            ['/homelocal/sicilia/lib/python/site-packages/panic/panic-small.gif'] ],
         #'Default_Text':
             #[PyTango.DevString,
             #"",
@@ -167,14 +188,17 @@ class FestivalDSClass(PyTango.DeviceClass):
 	#	Command definitions
     cmd_list = {    
     'Play' : 
-            [[PyTango.DevString, "Play a given Text"], 
+            [[PyTango.DevString, "Play a given Text; requires Festival library"], 
             [PyTango.DevVoid, ""]], 
     'Beep' : 
-            [[PyTango.DevVoid, "Force a Beep Sound "], 
+            [[PyTango.DevVoid, "Force a Beep Sound; requires Festival library "], 
             [PyTango.DevVoid, ""]], 
     'Play_Sequence' : 
-            [[PyTango.DevString, "Force a Beep Sound with a given speech"], 
+            [[PyTango.DevString, "Force a Beep Sound with a given speech;  requires Festival library"], 
             [PyTango.DevVoid, ""]], 
+    'PopUp' : 
+            [[PyTango.DevVarStringArray, "PopUp(title,text,[seconds]); Shows a system pop-up; requires libnotify-tools package"], 
+            [PyTango.DevString, ""]],             
         }
 
 
