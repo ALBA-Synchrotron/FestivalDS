@@ -1,0 +1,24 @@
+FestivalDS - Text to speech tango device server using festival speech synthesis
+
+Copyright 2013-2019 by CELLS / ALBA Synchrotron, Cerdanyola del Valles, Spain
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program.  If not, see <http://www.gnu.org/licenses/>.
+
+The audio binary files that this program incorporates (*.wav files) are covered
+by the Public Domain License and were incorporated from:
+http://soundbible.com/1815-A-Tone.html
+http://soundbible.com/1598-Electronic-Chime.html
+https://archive.org/details/SubmarineDiveAlarm
+https://freesound.org/people/zombie_expert/sounds/192765/
+https://freesound.org/people/LFSaw/sounds/425892/

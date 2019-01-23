@@ -1,21 +1,11 @@
-The property Beep_Path must be initialized to:
-/homelocal/sicilia/var/sounds/beep.wav
+FestivalDS - Text to speech tango device server using festival speech synthesis
 
-Comments added  330 min [Reply] [Comment] 
-Download (untitled) / with headers 
- text/html 1.8k 
+This device server can play speech voice messages from a given text by using the festival speech synthesis system.
+It has been tested in suse 11.1, suse 12.1 and (with minor modifications) in debian 9
 
-I correctly installed the DS in my suse 12.1 machine. The only thing is that the beep sound "beep.wav" is missing. I simply copied it manually to my machine.
-I have been playing with the device and found some problems.
+IMPORTANT NOTES:
 
-1) The user that runs the device server must be added to "audio" group. Otherwise, the process can't access "/dev/dsp", which is the device that is used for playing the sounds by festival. I added "sicilia" to that group and now it can play sounds with no problem.
+1) The user that runs the device server must be added to "audio" group.
 
-2) The device can't play sounds if the audio device is in use. This is a serious problem, since the DS will simply fail and play no sound if the audio device is in use. You can easily reproduce the problem by doing a "ctrl+f" in firefox looking for something that can't be find in the current page. The failure will play a sound (firefox plays sounds by default, see http://johnbokma.com/firefox/find-in-page-sound.html). If immediately after that you try to play a sound in the DS, (or directly running "echo "play a sound" | festival --tts"), you will see that the command will fail with "Linux: can't open /dev/dsp". Fortunately, there's a solution for this (see http://ubuntuforums.org/showthread.php?t=1270069). Hence, the DS should execute this command (note it includes padsp): "echo "play a sound" | padsp festival --tts"
-
-Pending tasks:
-
-0) Before doing anything, check that all the above works in suse 11.1, because that was tested in 12.1
-
-1) Include "beep.wav" in the bliss package. We should have a look at the copyrights of the sound before doing that.
-
-2) Modify the DS to execute the command including padsp (i. e. "echo "play a sound" | padsp festival --tts")
+2) The device can't play sounds if the audio device is in use. Fortunately, there's a solution for this (see http://ubuntuforums.org/showthread.php?t=1270069).
+The DS should execute this command (note it includes padsp): "echo "play a sound" | padsp festival --tts"
