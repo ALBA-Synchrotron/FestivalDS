@@ -1,0 +1,2 @@
+include sounds/*.wav
+exclude README

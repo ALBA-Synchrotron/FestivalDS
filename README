@@ -9,3 +9,5 @@ IMPORTANT NOTES:
 
 2) The device can't play sounds if the audio device is in use. Fortunately, there's a solution for this (see http://ubuntuforums.org/showthread.php?t=1270069).
 The DS should execute this command (note it includes padsp): "echo "play a sound" | padsp festival --tts"
+
+3) PopUp requires some setup to work. You need "libnotify-bin" to be installed in your machine. You also need the user running the device server to be able to execute "notify-send" as the user who is going to receive the pop up (this can be done by properly setting up sudoers). You will probably need to customize the command to show pop ups (accesible as a property of the device server)

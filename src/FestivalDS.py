@@ -25,6 +25,10 @@ import time
 import threading
 import fandango
 
+# managed by bumpversion do not edit manually
+__version = '1.0.0'
+
+
 #==================================================================
 #   FestivalDS Class Description:
 #
