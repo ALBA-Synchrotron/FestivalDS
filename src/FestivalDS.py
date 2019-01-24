@@ -40,17 +40,16 @@ def trace(msg):
 
 def os_cmd(cmd,term=True):
     trace( 'os:> %s'%cmd)
-    if term and not cmd.endswith('&'): cmd+=' &'
+    if term and not cmd.strip().endswith('&'): cmd+=' &'
     os.system(cmd)
 
-def Sequence(i,path,text):
+def Sequence(repeat, beep_cmd, festival_cmd):
     trace( 'In Sequence Thread ...')
     ev = threading.Event()
-    for i in xrange(i):
-        os_cmd("padsp play %s" % path,term=False)
+    for i in xrange(repeat):
+        os_cmd(beep_cmd, term=False)
         ev.wait(0.5)
-    out = 'echo "%s" | padsp festival --tts' % text
-    os_cmd(out,term=False)
+    os_cmd(festival_cmd, term=False)
 
 class FestivalDS(PyTango.Device_4Impl):
 
@@ -101,15 +100,15 @@ class FestivalDS(PyTango.Device_4Impl):
     ### Commands ###
     def Play(self,text):
         trace( 'In %s.Play(%s)'%(self.get_name(),text))
-        out = 'echo "%s" | padsp festival --tts &' % text
+        out = self.Cmd_Festival % text
         os_cmd(out)
 
     def Beep(self):
         trace( 'In %s.Beep()'%self.get_name())
-        if not self.Beep_Path:
+        if not os.path.isfile(self.Beep_Path):
             raise Exception('Wav file not set')
-        os_cmd("padsp play %s &" % self.Beep_Path)
-        
+        os_cmd(self.Cmd_Play % self.Beep_Path)
+
     def PopUp(self,argin):
         if len(argin) == 1:
             title, text, period = argin[0], '', 0
@@ -117,16 +116,19 @@ class FestivalDS(PyTango.Device_4Impl):
             title = argin[0]
             text = argin[1] if len(argin)>1 else ''
             period = int(argin[2]) if len(argin)>2 else 0
-        command = 'DISPLAY=%s notify-send "%s" -u critical'%(self.Display,title)
-        command+=" -t %s"%(1000*(period or 60))
-        if self.Icon: command+=" -i %s"%self.Icon
+        command = self.Cmd_PopUp % (self.Display, title, 1000*(period or 60))
+        if (self.Icon is not None) and (os.path.isfile(self.Icon)):
+            command += " -i %s" % self.Icon
         if text: command+=' "%s"'%text.replace('<br/>','\n').replace('<p>','\n').replace('</p>','\n').replace('<br>','\n')
         os_cmd(command)
         return title #command
      
-    def Play_Sequence(self, cmd):
-        trace( 'In %s.Play_Sequence(%s)'%(self.get_name(),cmd))
-        self.thread = threading.Thread(target=Sequence, args=(self.Default_Repeat_Times,self.Beep_Path,cmd))
+    def Play_Sequence(self, text):
+        trace( 'In %s.Play_Sequence(%s)'%(self.get_name(), text))
+        beep = self.Cmd_Play % self.Beep_Path
+        speech = self.Cmd_Festival % text
+        self.thread = threading.Thread(
+            target=Sequence, args=(self.Default_Repeat_Times, beep, speech))
         self.thread.start()        
 
 
@@ -158,7 +160,7 @@ class FestivalDSClass(PyTango.DeviceClass):
         'Default_Repeat_Times':
             [PyTango.DevShort,
             "",
-            None ],
+            1 ],
         'Display':
             [PyTango.DevString,
             "Display to show popup mesages",
@@ -167,6 +169,18 @@ class FestivalDSClass(PyTango.DeviceClass):
             [PyTango.DevString,
             "Icon for notifications",
             None ],
+        'Cmd_Festival':
+            [PyTango.DevString,
+            "System command to play festival speech",
+            "echo \"%s\" | padsp festival --tts" ],
+        'Cmd_Play':
+            [PyTango.DevString,
+            "System command to play a sound",
+            "padsp aplay %s" ],
+        'Cmd_PopUp':
+            [PyTango.DevString,
+            "System command to show pop ups",
+            "DISPLAY=%s sudo -u operator notify-send \"%s\" -u critical -t %d" ],
         }
 		
 
@@ -207,7 +221,7 @@ class FestivalDSClass(PyTango.DeviceClass):
 #	FestivalDS class main method
 #
 #==================================================================
-if __name__ == '__main__':
+def main():
     try:
         py = PyTango.Util(sys.argv)
         py.add_TgClass(FestivalDSClass,FestivalDS,'FestivalDS')
@@ -220,3 +234,7 @@ if __name__ == '__main__':
         print '-------> Received a DevFailed exception:',e
     except Exception,e:
         print '-------> An unforeseen exception occured....',e
+
+
+if __name__ == '__main__':
+    main()
