@@ -23,7 +23,7 @@ import sys
 import os
 import time
 import threading
-import fandango
+
 
 # managed by bumpversion do not edit manually
 __version = '1.0.0'
@@ -36,7 +36,7 @@ __version = '1.0.0'
 #=================================================================
 
 def trace(msg):
-  print '%s: %s' % (fandango.time2str(),msg)
+  print '%s: %s' % (time.strftime('%Y-%m-%d %H:%M:%S'), msg)
 
 def os_cmd(cmd,term=True):
     trace( 'os:> %s'%cmd)
@@ -111,8 +111,8 @@ class FestivalDS(PyTango.Device_4Impl):
         os_cmd("padsp play %s &" % self.Beep_Path)
         
     def PopUp(self,argin):
-        if fandango.isString(argin):
-            title,text,period = argin,'',0
+        if len(argin) == 1:
+            title, text, period = argin[0], '', 0
         else:
             title = argin[0]
             text = argin[1] if len(argin)>1 else ''
@@ -166,11 +166,7 @@ class FestivalDSClass(PyTango.DeviceClass):
         'Icon':
             [PyTango.DevString,
             "Icon for notifications",
-            ['/homelocal/sicilia/lib/python/site-packages/panic/panic-small.gif'] ],
-        #'Default_Text':
-            #[PyTango.DevString,
-            #"",
-            #None ],
+            None ],
         }
 		
 
