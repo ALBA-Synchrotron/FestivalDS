@@ -10,11 +10,14 @@ __version = '1.0.0'
 def main():
 
     setup(
-        name='tangods-festival',
+        name='festivalDS',
         version=__version,
-        package_dir={'tangods-festival': 'src'},
-        packages=['tangods-festival'],
-        include_package_data=True,  # include files in MANIFEST
+        package_dir={'festivalDS': 'festivalds'},
+        packages=['festivalDS'],
+        # include these files (bdist)
+        package_data={'tangods-festival': ['sounds/*.wav']},
+        # include files in MANIFEST.in (sdist)
+        include_package_data=True,
         author='ALBA Synchrotron computing group',
         author_email='computing@cells.es',
         description='Text to speech tango device server using festival',
@@ -24,7 +27,7 @@ def main():
         requires=['tango (>=7.2.6)'],
         entry_points={
             'console_scripts': [
-                'FestivalDS = src.FestivalDS:main',
+                'FestivalDS = festivalDS.FestivalDS:main',
             ],
         },
     )

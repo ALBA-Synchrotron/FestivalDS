@@ -1,2 +1,4 @@
-include sounds/*.wav
-exclude README
+include festivalds/sounds/*.wav
+include LICENSE
+include README
+exclude MANIFEST.in
